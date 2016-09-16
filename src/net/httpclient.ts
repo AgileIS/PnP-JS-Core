@@ -6,6 +6,7 @@ import { Util } from "../utils/util";
 import { RuntimeConfig } from "../configuration/pnplibconfig";
 import { SPRequestExecutorClient } from "./sprequestexecutorclient";
 import { NodeFetchClient } from "./nodefetchclient";
+import { NodeHttpBasicClient } from "./nodehttpbasicclient";
 
 export interface FetchOptions {
     method?: string;
@@ -137,6 +138,9 @@ export class HttpClient {
         } else if (RuntimeConfig.useNodeFetchClient) {
             let opts = RuntimeConfig.nodeRequestOptions;
             return new NodeFetchClient(opts.siteUrl, opts.clientId, opts.clientSecret);
+        } else if (RuntimeConfig.useNodeHttpBasicClient) {
+            let opts = RuntimeConfig.nodeHttpBasicOptions;
+            return new NodeHttpBasicClient(opts.username, opts.password);
         } else {
             return new FetchClient();
         }

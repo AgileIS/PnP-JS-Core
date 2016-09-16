@@ -10,6 +10,12 @@ export interface NodeClientData {
     siteUrl: string;
 }
 
+export interface NodeHttpBasicClientOptions {
+    username: string;
+    password: string;
+    siteUrl: string;
+}
+
 export interface LibraryConfiguration {
 
     /**
@@ -41,6 +47,11 @@ export interface LibraryConfiguration {
      * If set the library will use node-fetch, typically for use with testing but works with any valid client id/secret pair
      */
     nodeClientOptions?: NodeClientData;
+
+    /**
+     * If set the library will use node-fetch with basic authentication
+     */
+    nodeHttpBasicClientOptions?: NodeHttpBasicClientOptions;
 }
 
 export class RuntimeConfigImpl {
@@ -52,6 +63,8 @@ export class RuntimeConfigImpl {
     private _useSPRequestExecutor: boolean;
     private _useNodeClient: boolean;
     private _nodeClientData: NodeClientData;
+    private _useNodeHttpBasicClient: boolean;
+    private _nodeHttpBasicClientOptions: NodeHttpBasicClientOptions;
 
     constructor() {
         // these are our default values for the library
@@ -60,6 +73,7 @@ export class RuntimeConfigImpl {
         this._defaultCachingTimeoutSeconds = 30;
         this._globalCacheDisable = false;
         this._useSPRequestExecutor = false;
+        this._useNodeHttpBasicClient = false;
     }
 
     public set(config: LibraryConfiguration): void {
@@ -94,6 +108,16 @@ export class RuntimeConfigImpl {
                 webAbsoluteUrl: config.nodeClientOptions.siteUrl,
             };
         }
+
+        if (config.hasOwnProperty("nodeHttpBasicClientOptions")) {
+            this._useNodeClient = false;
+            this._useSPRequestExecutor = false;
+            this._useNodeHttpBasicClient = true;
+            this._nodeHttpBasicClientOptions = config.nodeHttpBasicClientOptions;
+            global._spPageContextInfo = {
+                webAbsoluteUrl: config.nodeHttpBasicClientOptions.siteUrl,
+            };
+        }
     }
 
     public get headers(): TypedHash<string> {
@@ -122,6 +146,14 @@ export class RuntimeConfigImpl {
 
     public get nodeRequestOptions(): NodeClientData {
         return this._nodeClientData;
+    }
+
+    public get useNodeHttpBasicClient(): boolean {
+        return this._useNodeHttpBasicClient;
+    }
+
+    public get nodeHttpBasicOptions(): NodeHttpBasicClientOptions{
+        return this._nodeHttpBasicClientOptions;
     }
 }
 
