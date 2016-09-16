@@ -505,6 +505,13 @@ declare module "configuration/pnplibconfig" {
         password: string;
         siteUrl: string;
     }
+    export interface NodeHttpNtlmClientOptions {
+        username: string;
+        password: string;
+        domain: string;
+        workstation: string;
+        siteUrl: string;
+    }
     export interface LibraryConfiguration {
         /**
          * Any headers to apply to all requests
@@ -534,6 +541,10 @@ declare module "configuration/pnplibconfig" {
          * If set the library will use node-fetch with basic authentication
          */
         nodeHttpBasicClientOptions?: NodeHttpBasicClientOptions;
+        /**
+         * If set the library will use node-fetch with ntlm authentication
+         */
+        nodeHttpNtlmClientOptions?: NodeHttpNtlmClientOptions;
     }
     export class RuntimeConfigImpl {
         private _headers;
@@ -545,6 +556,8 @@ declare module "configuration/pnplibconfig" {
         private _nodeClientData;
         private _useNodeHttpBasicClient;
         private _nodeHttpBasicClientOptions;
+        private _useNodeHttpNtlmClient;
+        private _nodeHttpNtlmClientOptions;
         constructor();
         set(config: LibraryConfiguration): void;
         headers: TypedHash<string>;
@@ -556,6 +569,8 @@ declare module "configuration/pnplibconfig" {
         nodeRequestOptions: NodeClientData;
         useNodeHttpBasicClient: boolean;
         nodeHttpBasicOptions: NodeHttpBasicClientOptions;
+        useNodeHttpNtlmClient: boolean;
+        nodeHttpNtlmOptions: NodeHttpNtlmClientOptions;
     }
     export let RuntimeConfig: RuntimeConfigImpl;
     export function setRuntimeConfig(config: LibraryConfiguration): void;
@@ -682,6 +697,30 @@ declare module "net/nodehttpbasicclient" {
         private authValue;
         constructor(username: string, password: string);
         fetch(url: string, options?: FetchOptions): Promise<Response>;
+        private _mergeHeaders(target, source);
+    }
+}
+declare module "net/ntlm" {
+    export namespace NTLM {
+        function createType1Message(options: any): string;
+        function parseType2Message(rawmsg: any, callback: any): any;
+        function createType3Message(msg2: any, options: any): string;
+    }
+}
+declare module "net/nodehttpntlmclient" {
+    import { HttpClientImpl, FetchOptions } from "net/httpclient";
+    /**
+     * Fetch client for use within nodejs, using ntlm auth
+     */
+    export class NodeHttpNtlmClient implements HttpClientImpl {
+        private _username;
+        private _password;
+        private _workstation;
+        private _domain;
+        private _agent;
+        constructor(_username: string, _password: string, _workstation: string, _domain: string);
+        fetch(url: string, options?: FetchOptions): Promise<Response>;
+        private fetchWithHandshake(url, options?);
         private _mergeHeaders(target, source);
     }
 }

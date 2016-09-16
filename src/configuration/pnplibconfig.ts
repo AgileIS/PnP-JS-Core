@@ -16,6 +16,14 @@ export interface NodeHttpBasicClientOptions {
     siteUrl: string;
 }
 
+export interface NodeHttpNtlmClientOptions {
+    username: string;
+    password: string;
+    domain: string;
+    workstation: string;
+    siteUrl: string;
+}
+
 export interface LibraryConfiguration {
 
     /**
@@ -52,6 +60,11 @@ export interface LibraryConfiguration {
      * If set the library will use node-fetch with basic authentication
      */
     nodeHttpBasicClientOptions?: NodeHttpBasicClientOptions;
+
+    /**
+     * If set the library will use node-fetch with ntlm authentication
+     */
+    nodeHttpNtlmClientOptions?: NodeHttpNtlmClientOptions;
 }
 
 export class RuntimeConfigImpl {
@@ -65,6 +78,8 @@ export class RuntimeConfigImpl {
     private _nodeClientData: NodeClientData;
     private _useNodeHttpBasicClient: boolean;
     private _nodeHttpBasicClientOptions: NodeHttpBasicClientOptions;
+    private _useNodeHttpNtlmClient: boolean;
+    private _nodeHttpNtlmClientOptions: NodeHttpNtlmClientOptions;
 
     constructor() {
         // these are our default values for the library
@@ -74,6 +89,7 @@ export class RuntimeConfigImpl {
         this._globalCacheDisable = false;
         this._useSPRequestExecutor = false;
         this._useNodeHttpBasicClient = false;
+        this._useNodeHttpNtlmClient = false;
     }
 
     public set(config: LibraryConfiguration): void {
@@ -118,6 +134,17 @@ export class RuntimeConfigImpl {
                 webAbsoluteUrl: config.nodeHttpBasicClientOptions.siteUrl,
             };
         }
+
+        if (config.hasOwnProperty("nodeHttpNtlmClientOptions")) {
+            this._useNodeClient = false;
+            this._useSPRequestExecutor = false;
+            this._useNodeHttpBasicClient = false;
+            this._useNodeHttpNtlmClient = true;
+            this._nodeHttpNtlmClientOptions = config.nodeHttpNtlmClientOptions;
+            global._spPageContextInfo = {
+                webAbsoluteUrl: config.nodeHttpNtlmClientOptions.siteUrl,
+            };
+        }
     }
 
     public get headers(): TypedHash<string> {
@@ -154,6 +181,14 @@ export class RuntimeConfigImpl {
 
     public get nodeHttpBasicOptions(): NodeHttpBasicClientOptions{
         return this._nodeHttpBasicClientOptions;
+    }
+
+    public get useNodeHttpNtlmClient(): boolean {
+        return this._useNodeHttpNtlmClient;
+    }
+
+    public get nodeHttpNtlmOptions(): NodeHttpNtlmClientOptions{
+        return this._nodeHttpNtlmClientOptions;
     }
 }
 
