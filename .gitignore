@@ -46,3 +46,4 @@ bower_components/
 dist/
 
 docs/
+*sp-pnp-js-*.tgz

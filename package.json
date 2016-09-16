@@ -15,6 +15,7 @@
     "del": "^2.2.1",
     "gulp": "^3.9.1",
     "gulp-debug": "^2.1.2",
+    "gulp-exec": "^2.1.2",
     "gulp-header": "^1.8.8",
     "gulp-istanbul": "^1.0.0",
     "gulp-mocha": "^3.0.1",
@@ -39,7 +40,8 @@
   },
   "scripts": {
     "test": "gulp test",
-    "postinstall": "typings install"
+    "postinstall": "typings install",
+    "pack-sync": "gulp package && npm pack && gulp package-sync && rm sp-pnp-js-*.tgz"
   },
   "repository": {
     "type": "git",

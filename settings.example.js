@@ -10,6 +10,11 @@ var settings = {
         clientSecret: "{ client secret }",
         enableWebTests: true,
         siteUrl: "{ site collection url }",
+    },
+    packageSync: {
+        syncProjects: [
+            "package sync project paths"
+        ]
     }
 }
 

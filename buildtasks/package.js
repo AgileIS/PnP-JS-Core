@@ -19,7 +19,8 @@ var gulp = require("gulp"),
     buffer = require("vinyl-buffer"),
     header = require('gulp-header'),
     srcmaps = require("gulp-sourcemaps"),
-    merge = require("merge2");
+    merge = require("merge2"),
+    exec = require('gulp-exec');
 
 // we need to build src (es5, umd) -> build
 // we need to package the definitions in a single file -> dist
@@ -169,3 +170,26 @@ gulp.task("package-serve", ["build-serve"], function () {
         packageProvisioningBundle()
     ]);
 });
+
+gulp.task("package-sync", function () {
+    var streams = [];
+
+    var packageStream = gulp.src('./*sp-pnp-js-*.tgz');
+    var syncProjects = global.settings.packageSync.syncProjects;
+    if (syncProjects && syncProjects.length > 0) {
+        console.log("Start synchronize package to projects.");
+        for (var i = 0; i < syncProjects.length; i++) {
+            var projectPath = syncProjects[i];
+            console.log("Sync Package to: " + projectPath);
+            streams.push(
+                packageStream.pipe(
+                    exec('cd "' + syncProjects[i] + '" && npm uninstall sp-pnp-js && npm install <%= file.path %>')
+                )
+            );
+        }
+    } else {
+        console.log("No projects definied to synchronize.")
+    }
+
+    return merge(streams);
+})
