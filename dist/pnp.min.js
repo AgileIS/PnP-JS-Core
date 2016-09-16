@@ -1,5 +1,5 @@
 /**
- * agileis-sp-pnp-js v1.0.4 - A reusable JavaScript library targeting SharePoint client-side development.
+ * sp-pnp-js v1.0.4 - A reusable JavaScript library targeting SharePoint client-side development.
  * MIT (https://github.com/OfficeDev/PnP-JS-Core/blob/master/LICENSE)
  * Copyright (c) 2016 Microsoft
  * docs: http://officedev.github.io/PnP-JS-Core
