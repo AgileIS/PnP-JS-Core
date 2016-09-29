@@ -34,12 +34,22 @@ export class Files extends QueryableCollection {
      * 
      * @param url The folder-relative url of the file.
      * @param shouldOverWrite Should a file with the same name in the same location be overwritten?
-     * @param content The file contents blob.
+     * @param content The file contents blob (or with nodejs: NodeFile with raw content as Buffer and the mime-type).
      * @returns The new File and the raw response. 
      */
-    public add(url: string, content: Blob, shouldOverWrite = true): Promise<FileAddResult> {
+    public add(url: string, content: Blob | NodeFile, shouldOverWrite = true): Promise<FileAddResult> {
+        let postOptions = undefined;
+        if ((content as NodeFile).data) {
+            let headers = {
+                "content-length": (content as NodeFile).data.length,
+                "content-type": (content as NodeFile).mime,
+            };
+            postOptions = { body: (content as NodeFile).data, headers: headers };
+        } else {
+            postOptions = { body: content as Blob };
+        }
         return new Files(this, `add(overwrite=${shouldOverWrite},url='${url}')`)
-            .post({ body: content }).then((response) => {
+            .post(postOptions).then((response) => {
                 return {
                     data: response,
                     file: this.getByName(url),
@@ -633,6 +643,11 @@ export class Version extends QueryableInstance {
             },
         });
     }
+}
+
+export interface NodeFile {
+    data: Buffer;
+    mime: string;
 }
 
 export enum CheckinType {
