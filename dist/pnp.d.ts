@@ -1913,10 +1913,10 @@ declare module "sharepoint/rest/files" {
          *
          * @param url The folder-relative url of the file.
          * @param shouldOverWrite Should a file with the same name in the same location be overwritten?
-         * @param content The file contents blob.
+         * @param content The file contents blob (or with nodejs: NodeFile with raw content as Buffer and the mime-type).
          * @returns The new File and the raw response.
          */
-        add(url: string, content: Blob, shouldOverWrite?: boolean): Promise<FileAddResult>;
+        add(url: string, content: Blob | NodeFile, shouldOverWrite?: boolean): Promise<FileAddResult>;
         /**
          * Adds a ghosted file to an existing list or document library.
          *
@@ -2294,6 +2294,10 @@ declare module "sharepoint/rest/files" {
         */
         delete(eTag?: string): Promise<void>;
     }
+    export interface NodeFile {
+        data: Buffer;
+        mime: string;
+    }
     export enum CheckinType {
         Minor = 0,
         Major = 1,
@@ -2444,6 +2448,14 @@ declare module "sharepoint/rest/contenttypes" {
          * Gets a ContentType by content type id
          */
         getById(id: string): ContentType;
+        /**
+         * Gets a ContentType by content type name property
+         */
+        getByName(name: string): ContentType;
+        /**
+         * Adds a Available ContentType by content type id
+         */
+        addById(id: string): Promise<ContentTypeAddResult>;
     }
     /**
      * Describes a single ContentType instance
@@ -2562,6 +2574,16 @@ declare module "sharepoint/rest/contenttypes" {
          * A string representation of the value of the Id.
          */
         stringId: Queryable;
+        /**
+         * Delete this content type
+         *
+         * @param eTag Value used in the IF-Match header, by default "*"
+         */
+        delete(eTag?: string): Promise<void>;
+    }
+    export interface ContentTypeAddResult {
+        contentType: ContentType;
+        data: any;
     }
 }
 declare module "sharepoint/rest/items" {
@@ -3533,6 +3555,12 @@ declare module "sharepoint/rest/webs" {
          * @param fileRelativeUrl the server relative path to the file (including /sites/ if applicable)
          */
         getFileByServerRelativeUrl(fileRelativeUrl: string): File;
+        /**
+         * Get a list by server relative url (list's root folder)
+         *
+         * @param listRelativeUrl the server relative path to the list's root folder (including /sites/ if applicable)
+         */
+        getList(listRelativeUrl: string): List;
         /**
          * Updates this web intance with the supplied properties
          *

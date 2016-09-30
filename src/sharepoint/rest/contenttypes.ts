@@ -25,6 +25,19 @@ export class ContentTypes extends QueryableCollection {
         ct.concat(`('${id}')`);
         return ct;
     }
+
+    /**
+     * Adds a Available ContentType by content type id
+     */
+    public addById(id: string): Promise<ContentTypeAddResult> {
+        return new ContentTypes(this, `addAvailableContentType('${id}')`)
+        .post().then((response) => {
+            return {
+                contentType: this.getById(id),
+                data: response,
+            };
+        });
+    }
 }
 
 /**
@@ -219,4 +232,23 @@ export class ContentType extends QueryableInstance {
     public get stringId(): Queryable {
         return new Queryable(this, "stringId");
     }
+
+    /**
+     * Delete this content type
+     *
+     * @param eTag Value used in the IF-Match header, by default "*"
+     */
+    public delete(eTag = "*"): Promise<void> {
+        return this.post({
+            headers: {
+                "IF-Match": eTag,
+                "X-HTTP-Method": "DELETE",
+            },
+        });
+    }
+}
+
+export interface ContentTypeAddResult {
+    contentType: ContentType;
+    data: any;
 }
