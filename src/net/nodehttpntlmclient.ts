@@ -3,7 +3,8 @@
 import { HttpClientImpl, FetchOptions } from "./httpclient";
 import { NTLM } from "./ntlm";
 import { Util } from "../utils/util";
-import { Agent } from "http";
+import * as http from "http";
+import * as https from "https";
 
 declare var global: any;
 declare var require: (path: string) => any;
@@ -14,15 +15,9 @@ let nodeFetch = require("node-fetch");
  */
 export class NodeHttpNtlmClient implements HttpClientImpl {
 
-    private _agent: Agent;
+    private _agent: http.Agent | https.Agent;
 
     constructor(private _username: string, private _password: string, private _workstation: string, private _domain: string) {
-
-        // maxSockets = 1, because handshake error offer multiple sockets
-        // (sometimes second handshake call goes out before agent frees the socket => new socket for second call)
-        // ToDo: inserting global agent for one time auth (all calls offer 1 socket)
-        this._agent = new Agent({ keepAlive: true, maxSockets: 1 });
-
         // here we "cheat" and set the globals for fetch things when this client is instantiated
         global.Headers = nodeFetch.Headers;
         global.Request = nodeFetch.Request;
@@ -30,6 +25,14 @@ export class NodeHttpNtlmClient implements HttpClientImpl {
     }
 
     public fetch(url: string, options?: FetchOptions): Promise<Response> {
+        // maxSockets = 1, because handshake error offer multiple sockets
+        // (sometimes second handshake call goes out before agent frees the socket => new socket for second call)
+        // ToDo: inserting global agent for one time auth (all calls offer 1 socket)
+        if (!this._agent && url.indexOf("https") > -1) {
+            this._agent = new https.Agent({ keepAlive: true, maxSockets: 1 });
+        } else if (!this._agent) {
+            this._agent = new http.Agent({ keepAlive: true, maxSockets: 1 });
+        }
         let newHeader = new Headers();
         newHeader.append("Connection", "keep-alive");
         this._mergeHeaders(newHeader, options.headers);
