@@ -2449,10 +2449,6 @@ declare module "sharepoint/rest/contenttypes" {
          */
         getById(id: string): ContentType;
         /**
-         * Gets a ContentType by content type name property
-         */
-        getByName(name: string): ContentType;
-        /**
          * Adds a Available ContentType by content type id
          */
         addById(id: string): Promise<ContentTypeAddResult>;

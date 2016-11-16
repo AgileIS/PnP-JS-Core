@@ -7,7 +7,7 @@
   "dependencies": {
     "es6-promise": "^3.0.0"
   },
-  "devDependencies": {
+  "Dependencies": {
     "browser-sync": "^2.11.1",
     "browserify": "^13.0.0",
     "chai": "^3.5.0",
@@ -40,7 +40,7 @@
   },
   "scripts": {
     "test": "gulp test",
-    "postinstall": "typings install",
+    "postinstall": "typings install && gulp package",
     "pack-sync": "gulp package && npm pack && gulp package-sync && rm sp-pnp-js-*.tgz"
   },
   "repository": {
