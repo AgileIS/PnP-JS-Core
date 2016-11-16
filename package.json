@@ -1,5 +1,5 @@
 {
-  "name": "@agileis/sp-pnp-js",
+  "name": "sp-pnp-js",
   "version": "1.0.4",
   "description": "A reusable JavaScript library targeting SharePoint client-side development.",
   "main": "./lib/pnp.js",
