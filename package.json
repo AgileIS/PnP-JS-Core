@@ -1,13 +1,13 @@
 {
-  "name": "sp-pnp-js",
+  "name": "ais-sp-pnp-js",
   "version": "1.0.4",
-  "description": "A reusable JavaScript library targeting SharePoint client-side development.",
+  "description": "A reusable JavaScript library targeting SharePoint client-side development. https://github.com/OfficeDev/PnP-Sites-Core/ || https://github.com/AgileIS/PnP-JS-Core -- With some changes and updates used in https://github.com/AgileIS/ais-sp-js-deployment ",
   "main": "./lib/pnp.js",
   "typings": "./lib/pnp",
   "dependencies": {
     "es6-promise": "^3.0.0"
   },
-  "Dependencies": {
+  "devDependencies": {
     "browser-sync": "^2.11.1",
     "browserify": "^13.0.0",
     "chai": "^3.5.0",
@@ -40,7 +40,7 @@
   },
   "scripts": {
     "test": "gulp test",
-    "postinstall": "typings install && gulp package",
+    "postinstall": "typings install",
     "pack-sync": "gulp package && npm pack && gulp package-sync && rm sp-pnp-js-*.tgz"
   },
   "repository": {

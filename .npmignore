@@ -17,3 +17,4 @@ tests/
 buildtasks/
 build/
 docs/
+*.tar.gz
